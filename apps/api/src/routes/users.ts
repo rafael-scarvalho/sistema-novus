@@ -1,10 +1,10 @@
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
-import { authMiddleware } from '../middleware/auth'
+import { requireAuth } from '../middleware/auth'
 import prisma from '../utils/prisma'
 
 const router = Router()
-router.use(authMiddleware)
+router.use(requireAuth)
 
 // Lista todos os usuários
 router.get('/', async (_req, res) => {

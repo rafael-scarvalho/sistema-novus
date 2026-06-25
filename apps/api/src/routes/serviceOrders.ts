@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import { authMiddleware } from '../middleware/auth'
+import { requireAuth } from '../middleware/auth'
 import prisma from '../utils/prisma'
 
 const router = Router()
-router.use(authMiddleware)
+router.use(requireAuth)
 
 const include = {
   vet: { select: { id: true, name: true, commissionRate: true } },

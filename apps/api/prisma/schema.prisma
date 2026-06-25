@@ -1,0 +1,428 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SURGEON
+  ASSISTANT
+  GUARDIAN
+}
+
+enum Species {
+  CANINO
+  FELINO
+  EXOTICO
+  OUTRO
+}
+
+enum Sex {
+  MACHO
+  FEMEA
+}
+
+enum PartnerType {
+  CLINICA
+  HOSPITAL
+  VETERINARIO
+  OUTRO
+}
+
+enum CommissionType {
+  PERCENTUAL
+  FIXO
+  NENHUM
+}
+
+enum CatalogItemCategory {
+  PROCEDIMENTO_CIRURGICO
+  ANESTESIA
+  MATERIAL
+  MEDICAMENTO
+  EXAME
+  CONSULTORIA
+  OUTRO
+}
+
+enum BudgetStatus {
+  RASCUNHO
+  ENVIADO
+  APROVADO
+  RECUSADO
+  EXPIRADO
+}
+
+enum PaymentMethod {
+  DINHEIRO
+  PIX
+  CARTAO_CREDITO
+  CARTAO_DEBITO
+  BOLETO
+  TRANSFERENCIA
+  PARCELADO
+}
+
+enum SurgeryStatus {
+  AGENDADA
+  CHECKIN_REALIZADO
+  PREPARACAO_ANESTESICA
+  EM_CIRURGIA
+  RECUPERACAO
+  ALTA_CONCEDIDA
+  CANCELADA
+}
+
+enum TransactionType {
+  ENTRADA
+  SAIDA
+}
+
+enum TransactionCategory {
+  CIRURGIA
+  CONSULTA
+  MATERIAL
+  REPASSE_PARCEIRO
+  IMPOSTO
+  SALARIO
+  EQUIPAMENTO
+  OUTRO
+}
+
+enum TransactionStatus {
+  PENDENTE
+  PAGO
+  CANCELADO
+}
+
+enum PatientRecordType {
+  EXAM_REQUEST
+  PRESCRIPTION
+  SURGERY_REPORT
+  EXAM_REPORT
+  DOCUMENT
+  WEIGHT
+  PREOP_CONSULT
+}
+
+enum ConsultationMode {
+  PRESENCIAL
+  ONLINE
+}
+
+enum ConsultationStatus {
+  AGENDADA
+  REALIZADA
+  CANCELADA
+}
+
+enum ConsultationWorkflowStatus {
+  CONSULTA
+  EXAMES_PRE_OP
+  CIRURGIA_AGENDADA
+  EXAMES_POS_OP
+  FINALIZADO
+}
+
+enum ReturnStatus {
+  PENDENTE
+  REALIZADO
+  CANCELADO
+}
+
+// ─── Usuários ────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(ASSISTANT)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Tutores / Responsáveis ───────────────────────────────────────────────────
+
+model Guardian {
+  id                String    @id @default(cuid())
+  name              String
+  cpf               String?   @unique
+  phone             String
+  whatsapp          String?
+  email             String?
+  address           String?
+  portalToken       String?   @unique
+  portalTokenExpiry DateTime?
+  portalUsername    String?   @unique
+  portalPasswordHash String?
+  portalActive      Boolean   @default(true)
+  patients          Patient[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// ─── Pacientes ───────────────────────────────────────────────────────────────
+
+model Patient {
+  id         String    @id @default(cuid())
+  name       String
+  species    Species
+  breed      String?
+  sex        Sex
+  birthDate  DateTime?
+  weight     Float?
+  microchip  String?
+  guardianId String
+  guardian   Guardian  @relation(fields: [guardianId], references: [id])
+  surgeries      Surgery[]
+  budgets        Budget[]
+  records        PatientRecord[]
+  consultations  PreOpConsultation[]
+  createdAt      DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+// ─── Parceiros ───────────────────────────────────────────────────────────────
+
+model Partner {
+  id              String         @id @default(cuid())
+  name            String
+  type            PartnerType
+  cnpj            String?        @unique
+  cpf             String?        @unique
+  phone           String
+  email           String?
+  address         String?
+  commissionType  CommissionType @default(NENHUM)
+  commissionValue Float          @default(0)
+  notes           String?
+  active          Boolean        @default(true)
+  surgeries       Surgery[]
+  budgets         Budget[]
+  settlements     PartnerSettlement[]
+  transactions    Transaction[]
+  consultations   PreOpConsultation[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+// ─── Catálogo de Itens ───────────────────────────────────────────────────────
+
+model CatalogItem {
+  id          String              @id @default(cuid())
+  name        String
+  description String?
+  category    CatalogItemCategory
+  unitPrice   Float
+  unit        String              @default("un")
+  active      Boolean             @default(true)
+  budgetItems BudgetItem[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+// ─── Orçamentos ──────────────────────────────────────────────────────────────
+
+model Budget {
+  id                    String               @id @default(cuid())
+  code                  String               @unique
+  patientId             String
+  patient               Patient              @relation(fields: [patientId], references: [id])
+  partnerId             String?
+  partner               Partner?             @relation(fields: [partnerId], references: [id])
+  status                BudgetStatus         @default(RASCUNHO)
+  validUntil            DateTime?
+  notes                 String?
+  items                 BudgetItem[]
+  paymentOptions        BudgetPaymentOption[]
+  subtotal              Float                @default(0)
+  discount              Float                @default(0)
+  total                 Float                @default(0)
+  approvedPaymentMethod PaymentMethod?
+  approvedAt            DateTime?
+  surgery               Surgery?
+  transactions          Transaction[]
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+}
+
+model BudgetItem {
+  id            String       @id @default(cuid())
+  budgetId      String
+  budget        Budget       @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  catalogItemId String?
+  catalogItem   CatalogItem? @relation(fields: [catalogItemId], references: [id])
+  name          String
+  description   String?
+  quantity      Float        @default(1)
+  unitPrice     Float
+  discount      Float        @default(0)
+  total         Float
+}
+
+model BudgetPaymentOption {
+  id           String        @id @default(cuid())
+  budgetId     String
+  budget       Budget        @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  method       PaymentMethod
+  installments Int?
+  discount     Float?
+  total        Float
+  notes        String?
+}
+
+// ─── Cirurgias ───────────────────────────────────────────────────────────────
+
+model Surgery {
+  id                   String                @id @default(cuid())
+  budgetId             String                @unique
+  budget               Budget                @relation(fields: [budgetId], references: [id])
+  patientId            String
+  patient              Patient               @relation(fields: [patientId], references: [id])
+  partnerId            String?
+  partner              Partner?              @relation(fields: [partnerId], references: [id])
+  scheduledDate        DateTime
+  status               SurgeryStatus         @default(AGENDADA)
+  googleCalendarEventId String?
+
+  // Pré-operatório
+  preOpAnamnesis        String?
+  preOpRequiredExams    String[]
+  preOpAnestheticRisk   String?
+  preOpAnestheticProtocol String?
+  preOpObservations     String?
+  preOpExamFiles        String[]
+
+  // Trans-operatório
+  transOpStartTime      DateTime?
+  transOpEndTime        DateTime?
+  transOpTeam           String[]
+  transOpTechniques     String?
+  transOpIntercurrences String?
+  transOpAnesthesiaNotes String?
+
+  // Pós-operatório
+  postOpRecoveryNotes   String?
+  postOpPrescriptions   String?
+  postOpReturnDate      DateTime?
+  postOpDischargeSummary String?
+  postOpReportFiles     String[]
+
+  statusHistory         SurgeryStatusUpdate[]
+  settlement            PartnerSettlement?
+  transactions          Transaction[]
+  returns               SurgeryReturn[]
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+}
+
+model SurgeryStatusUpdate {
+  id               String        @id @default(cuid())
+  surgeryId        String
+  surgery          Surgery       @relation(fields: [surgeryId], references: [id])
+  status           SurgeryStatus
+  message          String
+  notifiedWhatsapp Boolean       @default(false)
+  notifiedAt       DateTime?
+  createdAt        DateTime      @default(now())
+}
+
+// ─── Financeiro ──────────────────────────────────────────────────────────────
+
+model Transaction {
+  id            String              @id @default(cuid())
+  type          TransactionType
+  category      TransactionCategory
+  description   String
+  amount        Float
+  status        TransactionStatus   @default(PENDENTE)
+  dueDate       DateTime
+  paidAt        DateTime?
+  paymentMethod String?
+  surgeryId     String?
+  surgery       Surgery?            @relation(fields: [surgeryId], references: [id])
+  budgetId      String?
+  budget        Budget?             @relation(fields: [budgetId], references: [id])
+  partnerId     String?
+  partner       Partner?            @relation(fields: [partnerId], references: [id])
+  notes         String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model PatientRecord {
+  id        String            @id @default(cuid())
+  patientId String
+  patient   Patient           @relation(fields: [patientId], references: [id])
+  type      PatientRecordType
+  title     String
+  content   String            @default("")
+  fileUrl   String?
+  date      DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model PreOpConsultation {
+  id                    String             @id @default(cuid())
+  patientId             String
+  patient               Patient            @relation(fields: [patientId], references: [id])
+  partnerId             String?
+  partner               Partner?           @relation(fields: [partnerId], references: [id])
+  scheduledAt           DateTime
+  mode                  ConsultationMode   @default(PRESENCIAL)
+  status                ConsultationStatus @default(AGENDADA)
+
+  workflowStatus        ConsultationWorkflowStatus @default(CONSULTA)
+
+  // Google Meet / Calendar
+  googleCalendarEventId String?
+  googleMeetLink        String?
+
+  // Conteúdo clínico
+  anamnesis             String?
+  physicalExam          String?
+  anestheticRisk        String?
+  preOpExams            String?
+  anestheticProtocol    String?
+  surgicalPlan          String?
+  observations          String?
+
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+}
+
+model SurgeryReturn {
+  id          String       @id @default(cuid())
+  surgeryId   String
+  surgery     Surgery      @relation(fields: [surgeryId], references: [id])
+  returnDate  DateTime
+  notes       String?
+  status      ReturnStatus @default(PENDENTE)
+  completedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model PartnerSettlement {
+  id              String            @id @default(cuid())
+  partnerId       String
+  partner         Partner           @relation(fields: [partnerId], references: [id])
+  surgeryId       String            @unique
+  surgery         Surgery           @relation(fields: [surgeryId], references: [id])
+  grossAmount     Float
+  commissionType  String
+  commissionValue Float
+  commissionAmount Float
+  netAmount       Float
+  status          TransactionStatus @default(PENDENTE)
+  paidAt          DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}

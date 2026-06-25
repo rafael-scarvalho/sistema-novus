@@ -14,6 +14,7 @@ const STATUS_DOT: Record<string, string> = {
   PREPARACAO_ANESTESICA: 'bg-yellow-400',
   EM_CIRURGIA: 'bg-red-500',
   RECUPERACAO: 'bg-orange-400',
+  INTERNACAO: 'bg-pink-500',
   ALTA_CONCEDIDA: 'bg-green-500',
   CANCELADA: 'bg-gray-300',
 }

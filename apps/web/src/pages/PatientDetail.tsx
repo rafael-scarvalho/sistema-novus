@@ -45,20 +45,31 @@ export default function PatientDetailPage() {
       {/* Header */}
       <div className="card p-4">
         <div className="flex items-start gap-4">
-          <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-2xl font-bold text-purple-600 shrink-0">
-            {patient.name[0]}
+          {/* Foto do paciente */}
+          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-purple-100 flex items-center justify-center text-2xl font-bold text-purple-600 shrink-0">
+            {patient.photoUrl
+              ? <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/${patient.photoUrl}`} alt={patient.name} className="w-full h-full object-cover" />
+              : patient.name[0]
+            }
           </div>
-          <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900">{patient.name}</h1>
-            <p className="text-sm text-gray-500">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>{patient.name}</h1>
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
               {patient.species}{patient.breed ? ` · ${patient.breed}` : ''} · {patient.sex}
               {patient.weight ? ` · ${patient.weight}kg` : ''}
               {patient.birthDate ? ` · Nasc: ${formatDate(patient.birthDate)}` : ''}
+              {patient.microchip ? ` · Chip: ${patient.microchip}` : ''}
             </p>
-            <p className="text-sm text-gray-500 mt-1">
-              Tutor: <span className="font-medium">{patient.guardian.name}</span> · {patient.guardian.phone}
-              {patient.guardian.whatsapp && ` · WhatsApp: ${patient.guardian.whatsapp}`}
-            </p>
+            <div className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>
+              <span>Tutor: <span className="font-medium">{patient.guardian.name}</span></span>
+              {patient.guardian.cpf && <span> · CPF: {patient.guardian.cpf}</span>}
+              {patient.guardian.phone && <span> · {patient.guardian.phone}</span>}
+            </div>
+            {(patient.guardian.address || patient.guardian.cep) && (
+              <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+                📍 {[patient.guardian.cep, patient.guardian.address].filter(Boolean).join(' — ')}
+              </p>
+            )}
             <div className="flex items-center gap-2 mt-2">
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${patient.guardian.portalUsername ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                 {patient.guardian.portalUsername ? `🔐 Portal ativo · ${patient.guardian.portalUsername}` : '⚠️ Sem acesso ao portal'}

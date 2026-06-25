@@ -2,40 +2,161 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Variáveis por tema ─────────────────────────────────────────────────── */
+
+:root, [data-theme="default"] {
+  --sidebar-width: 240px;
+  --color-bg: #f8fafc;
+  --color-sidebar-bg: #ffffff;
+  --color-sidebar-border: #f1f5f9;
+  --color-sidebar-text: #64748b;
+  --color-sidebar-text-active: #2563eb;
+  --color-sidebar-active-bg: #eff6ff;
+  --color-sidebar-hover-bg: #f8fafc;
+  --color-card-bg: #ffffff;
+  --color-card-border: #f1f5f9;
+  --color-topbar-bg: #ffffff;
+  --color-topbar-border: #f1f5f9;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-subtle: #eff6ff;
+  --color-accent-text: #2563eb;
+  --color-input-bg: #ffffff;
+  --color-input-border: #e2e8f0;
+  --color-logo-bg: #2563eb;
+  --color-logo-text: #ffffff;
+}
+
+[data-theme="dark"] {
+  --sidebar-width: 240px;
+  --color-bg: #0f1117;
+  --color-sidebar-bg: #1a1d27;
+  --color-sidebar-border: #252836;
+  --color-sidebar-text: #94a3b8;
+  --color-sidebar-text-active: #38bdf8;
+  --color-sidebar-active-bg: #0f2744;
+  --color-sidebar-hover-bg: #252836;
+  --color-card-bg: #1a1d27;
+  --color-card-border: #252836;
+  --color-topbar-bg: #1a1d27;
+  --color-topbar-border: #252836;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-accent: #38bdf8;
+  --color-accent-hover: #0ea5e9;
+  --color-accent-subtle: #0f2744;
+  --color-accent-text: #38bdf8;
+  --color-input-bg: #252836;
+  --color-input-border: #334155;
+  --color-logo-bg: #38bdf8;
+  --color-logo-text: #0f1117;
+}
+
+[data-theme="navy"] {
+  --sidebar-width: 240px;
+  --color-bg: #f0f4f8;
+  --color-sidebar-bg: #0f2044;
+  --color-sidebar-border: #1a3460;
+  --color-sidebar-text: #94b8d9;
+  --color-sidebar-text-active: #f0c040;
+  --color-sidebar-active-bg: #1a3460;
+  --color-sidebar-hover-bg: #162d58;
+  --color-card-bg: #ffffff;
+  --color-card-border: #dde6f0;
+  --color-topbar-bg: #0f2044;
+  --color-topbar-border: #1a3460;
+  --color-text-primary: #0f2044;
+  --color-text-secondary: #4a6080;
+  --color-accent: #0f2044;
+  --color-accent-hover: #162d58;
+  --color-accent-subtle: #e8eef6;
+  --color-accent-text: #0f2044;
+  --color-input-bg: #ffffff;
+  --color-input-border: #cbd5e1;
+  --color-logo-bg: #f0c040;
+  --color-logo-text: #0f2044;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+
 @layer base {
   * { box-sizing: border-box; }
   body {
     font-family: 'Inter', sans-serif;
-    @apply bg-surface text-gray-900 antialiased;
-  }
-  :root {
-    --sidebar-width: 240px;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    @apply antialiased;
   }
 }
 
+/* ── Componentes ────────────────────────────────────────────────────────── */
+
 @layer components {
   .card {
-    @apply bg-white rounded-xl border border-gray-100 shadow-sm;
+    background-color: var(--color-card-bg);
+    border-color: var(--color-card-border);
+    @apply rounded-xl border shadow-sm;
   }
+
   .btn {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700;
+    background-color: var(--color-accent);
+    color: var(--color-logo-text, #fff);
+    @apply btn hover:opacity-90 active:opacity-80;
   }
   .btn-outline {
-    @apply btn border border-gray-200 text-gray-700 hover:bg-gray-50;
+    border-color: var(--color-card-border);
+    color: var(--color-text-secondary);
+    @apply btn border hover:opacity-80;
   }
   .btn-ghost {
-    @apply btn text-gray-600 hover:bg-gray-100;
+    color: var(--color-text-secondary);
+    @apply btn hover:opacity-80;
   }
+
   .input {
-    @apply w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-colors;
+    background-color: var(--color-input-bg);
+    border-color: var(--color-input-border);
+    color: var(--color-text-primary);
+    @apply w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 transition-colors;
+    --tw-ring-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
   }
+  .input:focus {
+    border-color: var(--color-accent);
+  }
+
   .label {
-    @apply block text-xs font-medium text-gray-500 mb-1;
+    color: var(--color-text-secondary);
+    @apply block text-xs font-medium mb-1;
   }
+
   .badge {
     @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Sidebar themed */
+  .sidebar {
+    background-color: var(--color-sidebar-bg);
+    border-color: var(--color-sidebar-border);
+  }
+  .sidebar-link {
+    color: var(--color-sidebar-text);
+  }
+  .sidebar-link:hover {
+    background-color: var(--color-sidebar-hover-bg);
+    color: var(--color-text-primary);
+  }
+  .sidebar-link.active {
+    background-color: var(--color-sidebar-active-bg);
+    color: var(--color-sidebar-text-active);
+    font-weight: 600;
+  }
+  .topbar {
+    background-color: var(--color-topbar-bg);
+    border-color: var(--color-topbar-border);
   }
 }

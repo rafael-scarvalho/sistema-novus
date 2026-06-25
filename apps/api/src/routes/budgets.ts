@@ -208,4 +208,18 @@ router.get('/:id/pdf', async (req, res) => {
   stream.pipe(res)
 })
 
+// Assinatura digital pelo tutor via portal
+router.post('/:id/sign', async (req, res) => {
+  const { signatureData } = req.body
+  const budget = await prisma.budget.findUnique({ where: { id: req.params.id } })
+  if (!budget) return res.status(404).json({ error: 'Orçamento não encontrado' })
+  if (budget.signedAt) return res.status(400).json({ error: 'Orçamento já assinado' })
+
+  const updated = await prisma.budget.update({
+    where: { id: req.params.id },
+    data: { signedAt: new Date(), signatureData: signatureData || `portal_${Date.now()}` },
+  })
+  res.json(updated)
+})
+
 export default router

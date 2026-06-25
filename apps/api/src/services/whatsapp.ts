@@ -4,6 +4,7 @@ const STATUS_EMOJI: Record<string, string> = {
   PREPARACAO_ANESTESICA: '💉',
   EM_CIRURGIA: '🔪',
   RECUPERACAO: '💊',
+  INTERNACAO: '🏥',
   ALTA_CONCEDIDA: '🏠',
   CANCELADA: '❌',
 }

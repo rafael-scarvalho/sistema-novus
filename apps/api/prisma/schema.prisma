@@ -73,6 +73,7 @@ enum SurgeryStatus {
   PREPARACAO_ANESTESICA
   EM_CIRURGIA
   RECUPERACAO
+  INTERNACAO
   ALTA_CONCEDIDA
   CANCELADA
 }
@@ -153,10 +154,12 @@ model Guardian {
   id                String    @id @default(cuid())
   name              String
   cpf               String?   @unique
+  birthDate         DateTime?
   phone             String
   whatsapp          String?
   email             String?
   address           String?
+  cep               String?
   portalToken       String?   @unique
   portalTokenExpiry DateTime?
   portalUsername    String?   @unique
@@ -172,6 +175,7 @@ model Guardian {
 model Patient {
   id         String    @id @default(cuid())
   name       String
+  photoUrl   String?
   species    Species
   breed      String?
   sex        Sex
@@ -215,16 +219,19 @@ model Partner {
 // ─── Catálogo de Itens ───────────────────────────────────────────────────────
 
 model CatalogItem {
-  id          String              @id @default(cuid())
-  name        String
-  description String?
-  category    CatalogItemCategory
-  unitPrice   Float
-  unit        String              @default("un")
-  active      Boolean             @default(true)
-  budgetItems BudgetItem[]
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  id           String              @id @default(cuid())
+  name         String
+  description  String?
+  category     CatalogItemCategory
+  unitPrice    Float
+  unit         String              @default("un")
+  active       Boolean             @default(true)
+  stockEnabled Boolean             @default(false)
+  stockQty     Float               @default(0)
+  stockMin     Float               @default(0)
+  budgetItems  BudgetItem[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
 }
 
 // ─── Orçamentos ──────────────────────────────────────────────────────────────
@@ -246,6 +253,11 @@ model Budget {
   total                 Float                @default(0)
   approvedPaymentMethod PaymentMethod?
   approvedAt            DateTime?
+  signedAt              DateTime?
+  signatureData         String?
+  signedCpf             String?
+  signedGovLevel        String?
+  signedDocHash         String?
   surgery               Surgery?
   transactions          Transaction[]
   createdAt             DateTime             @default(now())

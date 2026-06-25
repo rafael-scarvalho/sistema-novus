@@ -18,6 +18,8 @@ import returnRoutes from './routes/returns'
 import patientRecordRoutes from './routes/patientRecords'
 import consultationRoutes from './routes/consultations'
 import portalAuthRoutes from './routes/portalAuth'
+import dashboardRoutes from './routes/dashboard'
+import govbrRoutes from './routes/govbr'
 
 const app = express()
 const httpServer = createServer(app)
@@ -44,6 +46,8 @@ app.use('/api/returns', returnRoutes)
 app.use('/api/patients/:patientId/records', patientRecordRoutes)
 app.use('/api/consultations', consultationRoutes)
 app.use('/api/portal-auth', portalAuthRoutes)
+app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/govbr', govbrRoutes)
 
 io.on('connection', (socket) => {
   socket.on('join:surgery', (surgeryId: string) => {

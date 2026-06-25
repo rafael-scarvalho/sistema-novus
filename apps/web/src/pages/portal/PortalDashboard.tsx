@@ -10,6 +10,7 @@ const STATUS_LABELS: Record<string, string> = {
   PREPARACAO_ANESTESICA: 'Preparação anestésica',
   EM_CIRURGIA: 'Em cirurgia',
   RECUPERACAO: 'Em recuperação',
+  INTERNACAO: 'Internação',
   ALTA_CONCEDIDA: 'Alta concedida',
   CANCELADA: 'Cancelada',
 }
@@ -20,6 +21,7 @@ const STATUS_COLOR: Record<string, string> = {
   PREPARACAO_ANESTESICA: 'bg-orange-100 text-orange-700',
   EM_CIRURGIA: 'bg-red-100 text-red-700',
   RECUPERACAO: 'bg-purple-100 text-purple-700',
+  INTERNACAO: 'bg-pink-100 text-pink-700',
   ALTA_CONCEDIDA: 'bg-green-100 text-green-700',
   CANCELADA: 'bg-gray-100 text-gray-500',
 }

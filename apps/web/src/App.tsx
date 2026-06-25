@@ -17,6 +17,8 @@ import FinancialPage from './pages/Financial'
 import PortalPage from './pages/Portal'
 import CalendarPage from './pages/Calendar'
 import ReturnsPage from './pages/Returns'
+import MessagesPage from './pages/Messages'
+import ReportsPage from './pages/Reports'
 import PortalLogin from './pages/portal/PortalLogin'
 import PortalDashboard from './pages/portal/PortalDashboard'
 import PortalPatient from './pages/portal/PortalPatient'
@@ -59,6 +61,8 @@ function AppRoutes() {
         <Route path="financeiro" element={<FinancialPage />} />
         <Route path="agenda" element={<CalendarPage />} />
         <Route path="retornos" element={<ReturnsPage />} />
+        <Route path="mensagens" element={<MessagesPage />} />
+        <Route path="relatorios" element={<ReportsPage />} />
       </Route>
 
       {/* Portal do Tutor */}

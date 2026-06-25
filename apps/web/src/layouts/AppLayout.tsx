@@ -5,6 +5,7 @@ import {
   LayoutDashboard, Users, Building2, Package, FileText,
   Scissors, Wallet, LogOut, Menu, Calendar, RotateCcw, Palette, MessageCircle,
   Search, Bell, BarChart2, X, ChevronRight, FlaskConical, Clock, RotateCcw as Return,
+  UserCog,
 } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { cn, formatCurrency } from '../lib/utils'
@@ -24,6 +25,7 @@ const NAV = [
   { to: '/mensagens', icon: MessageCircle, label: 'Mensagens', badge: 3 },
   { to: '/financeiro', icon: Wallet, label: 'Financeiro' },
   { to: '/relatorios', icon: BarChart2, label: 'Relatórios' },
+  { to: '/usuarios', icon: UserCog, label: 'Usuários' },
 ]
 
 const THEMES: { value: Theme; label: string; dot: string }[] = [

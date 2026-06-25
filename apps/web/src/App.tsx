@@ -19,6 +19,7 @@ import CalendarPage from './pages/Calendar'
 import ReturnsPage from './pages/Returns'
 import MessagesPage from './pages/Messages'
 import ReportsPage from './pages/Reports'
+import UsersPage from './pages/Users'
 import PortalLogin from './pages/portal/PortalLogin'
 import PortalDashboard from './pages/portal/PortalDashboard'
 import PortalPatient from './pages/portal/PortalPatient'
@@ -63,6 +64,7 @@ function AppRoutes() {
         <Route path="retornos" element={<ReturnsPage />} />
         <Route path="mensagens" element={<MessagesPage />} />
         <Route path="relatorios" element={<ReportsPage />} />
+        <Route path="usuarios" element={<UsersPage />} />
       </Route>
 
       {/* Portal do Tutor */}

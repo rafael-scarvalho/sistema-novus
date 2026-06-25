@@ -3,9 +3,10 @@ import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
 import { api } from '../lib/api'
 import { formatDate, formatCurrency, SURGERY_STATUS_COLORS, SURGERY_STATUS_LABELS, BUDGET_STATUS_COLORS, BUDGET_STATUS_LABELS, cn } from '../lib/utils'
-import { Plus, Upload, Trash2, FileText, Pill, Stethoscope, FlaskConical, FolderOpen, Scale, ChevronRight, Video, MapPin, MessageCircle, CheckCircle2, X, ExternalLink, KeyRound } from 'lucide-react'
+import { Plus, Upload, Trash2, FileText, Pill, Stethoscope, FlaskConical, FolderOpen, Scale, ChevronRight, Video, MapPin, MessageCircle, CheckCircle2, X, ExternalLink, KeyRound, Receipt } from 'lucide-react'
+import ServiceOrders from '../components/ServiceOrders'
 
-type Tab = 'resumo' | 'consulta' | 'exames' | 'receituario' | 'relatorio' | 'laudos' | 'documentos' | 'peso'
+type Tab = 'resumo' | 'consulta' | 'exames' | 'receituario' | 'relatorio' | 'laudos' | 'documentos' | 'peso' | 'conta'
 
 export default function PatientDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -31,6 +32,7 @@ export default function PatientDetailPage() {
 
   const TABS = [
     { id: 'resumo', label: 'Resumo', icon: FileText },
+    { id: 'conta', label: 'Conta / OS', icon: Receipt },
     { id: 'consulta', label: 'Consulta Pré-Op', icon: Stethoscope },
     { id: 'exames', label: 'Req. Exames', icon: FlaskConical },
     { id: 'receituario', label: 'Receituário', icon: Pill },
@@ -180,6 +182,7 @@ export default function PatientDetailPage() {
 
         <div className="p-4">
           {tab === 'resumo' && <ResumoTab patient={patient} />}
+          {tab === 'conta' && <ServiceOrders patientId={id!} />}
           {tab === 'consulta' && <ConsultaPreOpTab patientId={id!} patient={patient} />}
           {tab === 'exames' && <ExamesTab patientId={id!} records={records} qc={qc} />}
           {tab === 'receituario' && <ReceituarioTab patientId={id!} records={records} qc={qc} />}

@@ -138,14 +138,18 @@ enum ReturnStatus {
 // ─── Usuários ────────────────────────────────────────────────────────────────
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(ASSISTANT)
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String         @id @default(cuid())
+  name             String
+  email            String         @unique
+  passwordHash     String
+  role             UserRole       @default(ASSISTANT)
+  active           Boolean        @default(true)
+  phone            String?
+  specialty        String?
+  commissionRate   Float          @default(0)
+  serviceOrders    ServiceOrder[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
 // ─── Tutores / Responsáveis ───────────────────────────────────────────────────
@@ -172,6 +176,44 @@ model Guardian {
 
 // ─── Pacientes ───────────────────────────────────────────────────────────────
 
+enum ServiceOrderStatus {
+  ABERTA
+  FECHADA
+  PAGA
+  CANCELADA
+}
+
+model ServiceOrder {
+  id              String             @id @default(cuid())
+  patientId       String
+  patient         Patient            @relation(fields: [patientId], references: [id])
+  vetId           String
+  vet             User               @relation(fields: [vetId], references: [id])
+  status          ServiceOrderStatus @default(ABERTA)
+  notes           String?
+  total           Float              @default(0)
+  totalCommission Float              @default(0)
+  paidAt          DateTime?
+  paymentMethod   PaymentMethod?
+  items           ServiceOrderItem[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model ServiceOrderItem {
+  id               String       @id @default(cuid())
+  serviceOrderId   String
+  serviceOrder     ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  catalogItemId    String?
+  catalogItem      CatalogItem? @relation(fields: [catalogItemId], references: [id])
+  name             String
+  quantity         Float        @default(1)
+  unitPrice        Float
+  commissionRate   Float        @default(0)
+  commissionAmount Float        @default(0)
+  total            Float
+}
+
 model Patient {
   id         String    @id @default(cuid())
   name       String
@@ -188,6 +230,7 @@ model Patient {
   budgets        Budget[]
   records        PatientRecord[]
   consultations  PreOpConsultation[]
+  serviceOrders  ServiceOrder[]
   createdAt      DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
@@ -229,9 +272,10 @@ model CatalogItem {
   stockEnabled Boolean             @default(false)
   stockQty     Float               @default(0)
   stockMin     Float               @default(0)
-  budgetItems  BudgetItem[]
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  budgetItems       BudgetItem[]
+  serviceOrderItems ServiceOrderItem[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 }
 
 // ─── Orçamentos ──────────────────────────────────────────────────────────────
